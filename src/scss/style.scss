@@ -1,0 +1,53 @@
+/*//basestyles*/
+@import "font-awesome";
+@import "materialize";
+
+/*//To enable background printing in Chrome:*/
+.list-image {
+    padding: 5px;
+}
+
+#printableArea {
+    width:100%;
+    max-width: 370px;
+    figure {
+        // background:url('http://www.hairmake-natural.com/_module/slide/_common/polaroid.png') no-repeat;
+        width: 100%;
+        position: relative;
+
+        img.photo {
+            width: 330px;
+            display: block;
+            margin: 0px auto;
+            padding: 20px 0;
+            z-index:1;
+            position:relative;
+        }
+
+        img.frame {
+            position:absolute;
+            left:0;
+            top:0;
+            z-index: 0;
+        }
+
+        figcaption {
+            background:red;
+            height: 200px;
+            color: white;
+        }
+    }
+}
+
+@media print {
+    figcaption {
+        background-color: red;
+        height: 100%;
+        width: 100%;
+        -webkit-print-color-adjust: exact;
+    }
+    body {
+      -webkit-print-color-adjust: exact;
+    }
+}
+

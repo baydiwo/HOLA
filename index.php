@@ -30,14 +30,82 @@ if ($tag==""){
 $ignoredImageArray=array(0,0,0,0);                                     // don't create new files if they have already been processed
 
 //====================================================
+?>
+<!DOCTYPE html>
+<html>
+<head>
+	<!--Import Google Icon Font-->
+	<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!-- Compiled and minified CSS -->
+  	<link rel="stylesheet" href="assets/css/style.css">
 
+	<!--Let browser know website is optimized for mobile-->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+</head>
+
+<body id="qz-page" role="document">
+
+	<?php include 'incl/header.php' ?>
+
+	<div class="container">
+		<div class="row">
+			<div class="col s12">
+				<button class="close tip" data-toggle="tooltip" title="Launch QZ" id="launch" href="#" onclick="launchQZ();" style="display: none;">
+                        <i class="fa fa-external-link"></i>
+                    </button>
+				<div id="qz-alert" style="position: fixed; width: 60%; margin: 0 4% 0 36%; z-index: 900;"></div>
+				<div id="qz-pin" style="position: fixed; width: 30%; margin: 0 66% 0 4%; z-index: 900;"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<button class="btn waves-effect waves-light" type="submit" name="action" onclick="printImage();">Print
+				 	<i class="material-icons right">send</i>
+				 </button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col s12">
+				<button type="button" class="btn btn-default btn-sm" onclick="findPrinter($('#printerSearch').val(), true);">Find Printer</button>
+                <button type="button" class="btn btn-default btn-sm" onclick="findDefaultPrinter(true);">Find Default Printer</button>
+                <button type="button" class="btn btn-default btn-sm" onclick="findPrinters();">Find All Printers</button>
+			</div>
+		</div>
+	</div>
+
+<?php
 if (!$tag){ ?>
-	<form>
-		Search and Generate images with Tag: <input name="tag"/>
-		<br><input type="checkbox" name="searchByLocation"/> Search By Location
-		<br><input type="checkbox" name="searchByLocation_ID"/> Search By Location ID (If Search By Location is checked. This will be ignored)
-		<br><input type="submit" value="Generate"/>
-	</form>
+	<div class="container">
+		<div class="row">
+			<form class="col s12">
+				<div class="row">
+					<h3>Search and Generate images with Tag: </h3>
+					<div class="input-field col s12">
+						<input name="tag" placeholder="Your Hastag" type="text" id="first_name" />
+						<label for="first_name">First Name</label>
+
+						<p>
+							<input type="checkbox" name="searchByLocation" id="searchByLocation" />
+							<label for="searchByLocation">Search By Location</label>
+						</p>
+						<p>
+							<input type="checkbox" name="searchByLocation_ID" id="searchByLocation_ID" />
+							<label for="searchByLocation_ID">Search By Location ID (If Search By Location is checked. This will be ignored)</label>
+						</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						 <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+						 	<i class="material-icons right">send</i>
+						 </button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div> <!-- container -->
+
 <? } else {
 	while (TRUE){
 		// GET THE URL
@@ -144,11 +212,56 @@ if (!$tag){ ?>
 	}
 
 	// =========== OUTPUT TO WEB BROWSER ============
-	echo "<table bgcolor='#ccc'><tr>";
-	for ($i=0;$i<4;$i++)
-		echo "<td><img src='".$dstDir."/".md5($imgArr[$i]).".jpg"."'/></td>";
-	echo "</tr></table>";
-
+	?>
+	<div class="container">
+		<div class="row">
+			<div class="col s12">
+				<div class="polaroid-wrapper" id="printableArea">
+					<ul>
+						<?php
+						echo "";
+						for ($i=0;$i<4;$i++)
+							echo "<li><img src='".$dstDir."/".md5($imgArr[$i]).".jpg"."'/></li>";
+						echo "";
+						?>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	<?php
 	 # Output straight to the browser.
 	 //imagepng($image);
 }
+?>
+
+	<?php //include 'incl/content.php' ?>
+	<?php //include 'incl/footer.php' ?>
+	<!--  Scripts-->
+	<script src="https://demo.qz.io/js/additional/jquery-1.11.3.min.js"></script>
+	<script src="assets/js/vendor/materialize.js"></script>
+	<script src="assets/js/vendor/init.js"></script>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+	<!-- Required Print scripts -->
+	<script type="text/javascript" src="assets/js/vendor/rsvp-3.1.0.min.js"></script>
+	<script type="text/javascript" src="assets/js/vendor/sha-256.min.js"></script>
+	<script type="text/javascript" src="assets/js/vendor/qz-tray.js"></script>
+
+	<script src="assets/js/app.js"></script>
+	<script>
+		function printDiv(divName) {
+		     var printContents = document.getElementById(divName).innerHTML;
+		     var originalContents = document.body.innerHTML;
+
+		     document.body.innerHTML = printContents;
+
+		     window.print();
+
+		     document.body.innerHTML = originalContents;
+		}
+	</script>
+</body>
+</html>

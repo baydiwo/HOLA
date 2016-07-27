@@ -23,13 +23,10 @@
     "gulp-autoprefixer": "^3.1.0",
     "gulp-concat": "^2.6.0",
     "gulp-plumber": "^1.1.0",
-    "gulp-sass": "^2.3.1",
     "gulp-uglify": "^1.5.3",
-    "gulp-watch": "~1.1.0"
+    "gulp-watch": "^4.3.8"
   },
   "devDependencies": {
-    "bootstrap-sass": "^3.0.0",
-    "gulp-uglify": "^1.5.3",
-    "laravel-elixir": "^5.0.0"
+    "gulp-sass": "^2.3.2"
   }
 }
