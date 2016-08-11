@@ -1,0 +1,120 @@
+
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+
+    <title>HOLA!</title>
+</head>
+
+<!-- Required scripts -->
+<script type="text/javascript" src="assets/js/vendor/rsvp-3.1.0.min.js"></script>
+<script type="text/javascript" src="assets/js/vendor/sha-256.min.js"></script>
+<script type="text/javascript" src="assets/js/vendor/qz-tray.js"></script>
+
+<!-- Page styling -->
+<script src="https://demo.qz.io/js/additional/jquery-1.11.3.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<!-- <link rel="stylesheet" href="https://demo.qz.io/css/font-awesome.min.css" /> -->
+<link rel="stylesheet" href="https://demo.qz.io/css/bootstrap.min.css" />
+<!-- <link rel="stylesheet" href="https://demo.qz.io/css/style.css" /> -->
+
+
+<body id="qz-page" role="document">
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="https://qz.io/"><span class="fa fa-print"></span>&nbsp;qz.</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <!-- cheap way to avoid reimplementing the php menu -->
+                <li><a href="#">Demo Mode</a></li>
+                <li><a href="https://qz.io/api/" target="_docs">API</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div id="qz-alert" style="position: fixed; width: 60%; margin: 0 4% 0 36%; z-index: 900;"></div>
+<div id="qz-pin" style="position: fixed; width: 30%; margin: 0 66% 0 4%; z-index: 900;"></div>
+
+<div class="container" role="main">
+
+    <div class="row">
+        <h1 id="title" class="page-header">QZ Tray v<span id="qz-version">0</span></h1>
+    </div>
+
+    <div class="row spread">
+        <div class="col-md-4">
+            <div id="qz-connection" class="panel panel-default">
+                <div class="panel-heading">
+                    <button class="close tip" data-toggle="tooltip" title="Launch QZ" id="launch" href="#" onclick="launchQZ();" style="display: none;">
+                        <i class="fa fa-external-link"></i>
+                    </button>
+                    <h3 class="panel-title">
+                        Connection: <span id="qz-status" class="text-muted" style="font-weight: bold;">Unknown</span>
+                    </h3>
+                </div>
+
+                <div class="panel-body">
+                    <div class="btn-toolbar">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-success" onclick="startConnection();">Connect</button>
+                            <button type="button" class="btn btn-warning" onclick="endConnection();">Disconnect</button>
+                        </div>
+                        <button type="button" class="btn btn-info" onclick="listNetworkInfo();">List Network Info</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Printer</h3>
+                </div>
+
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="printerSearch">Search:</label>
+                        <input type="text" id="printerSearch" value="zebra" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default btn-sm" onclick="findPrinter($('#printerSearch').val(), true);">Find Printer</button>
+                            <button type="button" class="btn btn-default btn-sm" onclick="findDefaultPrinter(true);">Find Default Printer</button>
+                            <button type="button" class="btn btn-default btn-sm" onclick="findPrinters();">Find All Printers</button>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="form-group">
+                        <label>Current printer:</label>
+                        <div id="configPrinter">NONE</div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default btn-sm" onclick="setPrinter($('#printerSearch').val());">Set To Search</button>
+                            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#askFileModal">Set To File</button>
+                            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#askHostModal">Set To Host</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="row">
+                <div class="right-side">
+                    <button type="button" class="btn btn-default" onclick="printImage();">Print Image</button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- row spread -->
+</div> <!-- container -->
+
+    <script type="text/javascript" src="assets/js/app.js"></script>
+</body>
+
+
+
+</html>

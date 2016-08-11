@@ -34,6 +34,20 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
 <!DOCTYPE html>
 <html>
 <head>
+
+	<!-- Required Print scripts -->
+	<script type="text/javascript" src="assets/js/vendor/rsvp-3.1.0.min.js"></script>
+	<script type="text/javascript" src="assets/js/vendor/sha-256.min.js"></script>
+	<script type="text/javascript" src="assets/js/vendor/qz-tray.js"></script>
+
+	<!--  Scripts-->
+	<script src="assets/js/vendor/jquery-1.11.3.min.js"></script>
+	<script src="assets/js/vendor/materialize.js"></script>
+	<script src="assets/js/vendor/init.js"></script>
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" ></script>
+
 	<!--Import Google Icon Font-->
 	<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<!-- Compiled and minified CSS -->
@@ -48,7 +62,7 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
 
 	<?php include 'incl/header.php' ?>
 
-	<div class="container">
+	<div class="container" role="main">
 		<div class="row">
 			<div class="col s12">
 				<button class="close tip" data-toggle="tooltip" title="Launch QZ" id="launch" href="#" onclick="launchQZ();" style="display: none;">
@@ -74,8 +88,7 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
 		</div>
 	</div>
 
-<?php
-if (!$tag){ ?>
+<?php if (!$tag){ ?>
 	<div class="container">
 		<div class="row">
 			<form class="col s12">
@@ -106,7 +119,7 @@ if (!$tag){ ?>
 		</div>
 	</div> <!-- container -->
 
-<? } else {
+<?php } else {
 	while (TRUE){
 		// GET THE URL
 		// $url="https://api.instagram.com/v1/tags/".$tag."/media/recent?client_id=".$clientId; // SEARCH BY TAGS - Instagram API tags endpoint
@@ -237,18 +250,6 @@ if (!$tag){ ?>
 
 	<?php //include 'incl/content.php' ?>
 	<?php //include 'incl/footer.php' ?>
-	<!--  Scripts-->
-	<script src="https://demo.qz.io/js/additional/jquery-1.11.3.min.js"></script>
-	<script src="assets/js/vendor/materialize.js"></script>
-	<script src="assets/js/vendor/init.js"></script>
-
-	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
-	<!-- Required Print scripts -->
-	<script type="text/javascript" src="assets/js/vendor/rsvp-3.1.0.min.js"></script>
-	<script type="text/javascript" src="assets/js/vendor/sha-256.min.js"></script>
-	<script type="text/javascript" src="assets/js/vendor/qz-tray.js"></script>
 
 	<script src="assets/js/app.js"></script>
 	<script>

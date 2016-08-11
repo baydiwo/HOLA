@@ -4,9 +4,9 @@ qz.security.setCertificatePromise(function(resolve, reject) {
 //        $.ajax("assets/signing/digital-certificate.txt").then(resolve, reject);
 
     //Alternate method 1 - anonymous
-//        resolve();
+       // resolve();
 
-    //Alternate method 2 - direct
+    // Alternate method 2 - direct
     resolve("-----BEGIN CERTIFICATE-----\n" +
             "MIIFAzCCAuugAwIBAgICEAIwDQYJKoZIhvcNAQEFBQAwgZgxCzAJBgNVBAYTAlVT\n" +
             "MQswCQYDVQQIDAJOWTEbMBkGA1UECgwSUVogSW5kdXN0cmllcywgTExDMRswGQYD\n" +
@@ -419,22 +419,49 @@ function printPDF() {
     qz.print(config, printData).catch(displayError);
 }
 
-function printImage() {
+function getAllImage() {
+    // var imageName = $( "#polaroid-wrapper" ).text( $( "img" ).data( "name" ));
+    var listImage = [];
+    $( '.printed-image' ).each( function ( index ) {
+        imgName = $( this ).data( "name" );
+
+        var objs = { type: 'image', data: 'Completed_Pictures/seattle/'+imgName+'.jpg' };
+        listImage.push(objs);
+
+        // listImage = objs;
+    });
+    // console.log(listImage);
+    printImage(listImage);
+}
+
+function printCheckedImage() {
+    var listImage = [];
+    $( '#polaroid-wrapper input[id]:checked' ).each( function ( index ) {
+        imgName = $( this ).val();
+        var objs = { type: 'image', data: 'Completed_Pictures/seattle/'+imgName+'.jpg' };
+        listImage.push(objs);
+    });
+
+    // console.log(listImage);
+    printImage(listImage);
+}
+
+function printImage(lists) {
     // var config = getUpdatedConfig();
-    var config = qz.configs.create("Brother_MFC_L2740DW_series", {
-        size: {width: 2.25, height: 1.25}, units: 'in',
-        colorType: 'grayscale',
-        density: 200
+    var config = qz.configs.create("Send To OneNote 16", {
+        size: {width: 4, height: 6},
+        units: 'in',
+        colorType: 'color',
+        density: 400,
         // interpolation: "nearest-neighbor"
     });
 
-    var printData = [
-        { type: 'image', data: 'Completed_Pictures/seattle/5fc68c20fbeb865a18c0b391f92d9908.jpg' }
-    ];
+    // var printData = [
+    //     { type: 'image', data: 'Completed_Pictures/seattle/15846da0c779a0de35b3b40b358d07ec.jpg' },
+    //     { type: 'image', data: 'Completed_Pictures/seattle/d491ad0d4f27e1cf323187e23804a954.jpg' }
+    // ];
 
-    // console.log(config);
-
-    qz.print(config, printData).catch(displayError);
+    qz.print(config, lists).catch(displayError);
 }
 
 
@@ -793,30 +820,30 @@ qz.usb.setUsbCallbacks(function(streamEvent) {
     }
 });
 
-qz.hid.setHidCallbacks(function(streamEvent) {
-    var vendor = streamEvent.vendorId;
-    var product = streamEvent.productId;
+// qz.hid.setHidCallbacks(function(streamEvent) {
+//     var vendor = streamEvent.vendorId;
+//     var product = streamEvent.productId;
 
-    if (vendor.substring(0, 2) != '0x') { vendor = '0x' + vendor; }
-    if (product.substring(0, 2) != '0x') { product = '0x' + product; }
-    var $pin = $('#' + vendor + product);
+//     if (vendor.substring(0, 2) != '0x') { vendor = '0x' + vendor; }
+//     if (product.substring(0, 2) != '0x') { product = '0x' + product; }
+//     var $pin = $('#' + vendor + product);
 
-    if (streamEvent.type === 'RECEIVE') {
-        if (window.readingWeight) {
-            var weight = readScaleData(streamEvent.output);
-            if (weight) {
-                $pin.html("<strong>Weight:</strong> " + weight);
-            }
-        } else {
-            $pin.html("<strong>Raw data:</strong> " + streamEvent.output);
-        }
-    } else if (streamEvent.type === 'ACTION') {
-        displayMessage("<strong>Device status changed:</strong> " + "[v:" + vendor + " p:" + product + "] - " + streamEvent.actionType);
-    } else { //ERROR type
-        console.log(streamEvent.exception);
-        $pin.html("<strong>Error:</strong> " + streamEvent.exception);
-    }
-});
+//     if (streamEvent.type === 'RECEIVE') {
+//         if (window.readingWeight) {
+//             var weight = readScaleData(streamEvent.output);
+//             if (weight) {
+//                 $pin.html("<strong>Weight:</strong> " + weight);
+//             }
+//         } else {
+//             $pin.html("<strong>Raw data:</strong> " + streamEvent.output);
+//         }
+//     } else if (streamEvent.type === 'ACTION') {
+//         displayMessage("<strong>Device status changed:</strong> " + "[v:" + vendor + " p:" + product + "] - " + streamEvent.actionType);
+//     } else { //ERROR type
+//         console.log(streamEvent.exception);
+//         $pin.html("<strong>Error:</strong> " + streamEvent.exception);
+//     }
+// });
 
 var qzVersion = 0;
 function findVersion() {
@@ -1099,3 +1126,10 @@ function setPrinter(printer) {
         $("#configPrinter").html(printer);
     }
 }
+
+$(document).ready(function(){
+    $('.checkboxes').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        // increaseArea: '20%' // optional
+    });
+});

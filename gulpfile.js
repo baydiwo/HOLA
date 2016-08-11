@@ -38,7 +38,7 @@ gulp.task('js', ['js_copy'], function() {
     ])
     .pipe(plumber())
     .pipe(concat('app.js'))
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest('assets/js/'))
 });
 

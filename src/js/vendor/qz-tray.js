@@ -42,9 +42,10 @@ var qz = (function() {
         },
 
 
-        //stream types
+        //stream types (PrintSocketClient.StreamType)
         streams: {
-            serial: 'SERIAL', usb: 'USB', hid: 'HID'
+            serial: 'SERIAL',
+            usb: 'USB'
         },
 
 
@@ -222,28 +223,12 @@ var qz = (function() {
                                 _qz.websocket.connection.close(4003, "Connected to incompatible QZ Tray version");
 
                             } else {
-                                //streams (callbacks only, no promises)
-                                switch(returned.type) {
-                                    case _qz.streams.serial:
-                                        if (!returned.event) {
-                                            returned.event = JSON.stringify({ portName: returned.key, output: returned.data });
-                                        }
-
-                                        _qz.serial.callSerial(JSON.parse(returned.event));
-                                        break;
-                                    case _qz.streams.usb:
-                                        if (!returned.event) {
-                                            returned.event = JSON.stringify({ vendorId: returned.key[0], productId: returned.key[1], output: returned.data });
-                                        }
-
-                                        _qz.usb.callUsb(JSON.parse(returned.event));
-                                        break;
-                                    case _qz.streams.hid:
-                                        _qz.hid.callHid(JSON.parse(returned.event));
-                                        break;
-                                    default:
-                                        _qz.log.warn("Cannot determine stream type for callback", returned);
-                                        break;
+                                if (returned.type == _qz.streams.serial) {
+                                    _qz.serial.callSerial(returned.key, returned.data)
+                                } else if (returned.type == _qz.streams.usb) {
+                                    _qz.usb.callUsb(returned.key, returned.data);
+                                } else {
+                                    _qz.log.warn("Cannot determine stream type for callback", returned);
                                 }
                             }
 
@@ -338,7 +323,6 @@ var qz = (function() {
                 copies: 1,
                 density: 0,
                 duplex: false,
-                fallbackDensity: 600,
                 interpolation: 'bicubic',
                 jobName: null,
                 margins: 0,
@@ -363,13 +347,13 @@ var qz = (function() {
             /** List of functions called when receiving data from serial connection. */
             serialCallbacks: [],
             /** Calls all functions registered to listen for serial events. */
-            callSerial: function(streamEvent) {
+            callSerial: function(port, output) {
                 if (Array.isArray(_qz.serial.serialCallbacks)) {
                     for(var i = 0; i < _qz.serial.serialCallbacks.length; i++) {
-                        _qz.serial.serialCallbacks[i](streamEvent);
+                        _qz.serial.serialCallbacks[i](port, output);
                     }
                 } else {
-                    _qz.serial.serialCallbacks(streamEvent);
+                    _qz.serial.serialCallbacks(port, output);
                 }
             }
         },
@@ -378,30 +362,14 @@ var qz = (function() {
         usb: {
             /** List of functions called when receiving data from usb connection. */
             usbCallbacks: [],
-            /** Calls all functions registered to listen for usb events. */
-            callUsb: function(streamEvent) {
+            /** Calls all functions registered to listen for usb events. Key[vendor,product,interface,endpoint] */
+            callUsb: function(keys, data) {
                 if (Array.isArray(_qz.usb.usbCallbacks)) {
                     for(var i = 0; i < _qz.usb.usbCallbacks.length; i++) {
-                        _qz.usb.usbCallbacks[i](streamEvent);
+                        _qz.usb.usbCallbacks[i](keys, data);
                     }
                 } else {
-                    _qz.usb.usbCallbacks(streamEvent);
-                }
-            }
-        },
-
-
-        hid: {
-            /** List of functions called when receiving data from hid connection. */
-            hidCallbacks: [],
-            /** Calls all functions registered to listen for hid events. */
-            callHid: function(streamEvent) {
-                if (Array.isArray(_qz.hid.hidCallbacks)) {
-                    for(var i = 0; i < _qz.hid.hidCallbacks.length; i++) {
-                        _qz.hid.hidCallbacks[i](streamEvent);
-                    }
-                } else {
-                    _qz.hid.hidCallbacks(streamEvent);
+                    _qz.usb.usbCallbacks(keys, data);
                 }
             }
         },
@@ -615,12 +583,7 @@ var qz = (function() {
                     //disable secure ports if page is not secure
                     if (typeof location === 'undefined' || location.protocol !== 'https:') {
                         if (options == undefined) { options = {}; }
-
-                        //respect forcing secure ports if it is defined, otherwise disable
-                        if (options.usingSecure === undefined) {
-                            _qz.log.trace("Disabling secure ports due to insecure page");
-                            options.usingSecure = false;
-                        }
+                        options.usingSecure = false;
                     }
 
                     var attempt = function(count) {
@@ -745,7 +708,6 @@ var qz = (function() {
              *  @param {number} [options.copies=1] Number of copies to be printed.
              *  @param {number} [options.density=72] Pixel density (DPI, DPMM, or DPCM depending on <code>[options.units]</code>).
              *  @param {boolean} [options.duplex=false] Double sided printing
-             *  @param {number} [options.fallbackDensity=600] Value used when default density value cannot be read, or in cases where reported as "Normal" by the driver.
              *  @param {string} [options.interpolation='bicubic'] Valid values <code>[bicubic | bilinear | nearest-neighbor]</code>. Controls how images are handled when resized.
              *  @param {string} [options.jobName=null] Name to display in print queue.
              *  @param {Object|number} [options.margins=0] If just a number is provided, it is used as the margin for all sides.
@@ -871,9 +833,6 @@ var qz = (function() {
 
             /**
              * List of functions called for any response from open serial ports.
-             * Event data will contain <code>{string} portName</code> for all types.
-             *  For RECEIVE types, <code>{string} output</code>.
-             *  For ERROR types, <code>{string} exception</code>.
              *
              * @param {Function|Array<Function>} calls Single or array of <code>Function({string} portName, {string} output)</code> calls.
              *
@@ -995,11 +954,9 @@ var qz = (function() {
 
             /**
              * List of functions called for any response from open usb devices.
-             * Event data will contain <code>{string} vendorId</code> and <code>{string} productId</code> for all types.
-             *  For RECEIVE types, <code>{Array} output</code> (in hexadecimal format).
-             *  For ERROR types, <code>{string} exception</code>.
              *
-             * @param {Function|Array<Function>} calls Single or array of <code>Function({Object} eventData)</code> calls.
+             * @param {Function|Array<Function>} calls Single or array of <code>Function({string[]} keys, {string[]} rawData)</code> calls.
+             *                                         Key array is formatted as [vendor, product, interface, endpoint]. Raw data is in hexadecimal format.
              *
              * @memberof qz.usb
              */
@@ -1127,184 +1084,6 @@ var qz = (function() {
                     productId: productId
                 };
                 return _qz.websocket.dataPromise('usb.releaseDevice', params);
-            }
-        },
-
-
-        /**
-         * Calls related to interaction with HID USB devices<br/>
-         * Many of these calls can be accomplished from the <code>qz.usb</code> namespace,
-         * but HID allows for simpler interaction
-         * @namespace qz.hid
-         */
-        hid: {
-            /**
-             * List of available HID devices. Includes (hexadecimal) vendor ID and (hexadecimal) product ID.
-             * If available, also returns manufacturer and product descriptions.
-             *
-             * @returns {Promise<Array<Object>|Error>} Array of JSON objects containing information on connected HID devices.
-             *
-             * @memberof qz.hid
-             */
-            listDevices: function() {
-                return _qz.websocket.dataPromise('hid.listDevices');
-            },
-
-            /**
-             * Start listening for HID device actions, such as attach / detach events.
-             * Reported under the ACTION type in the streamEvent on callbacks.
-             *
-             * @returns {Promise<null|Error>}
-             *
-             * @see qz.hid.setHidCallbacks
-             *
-             * @memberof qz.hid
-             */
-            startListening: function() {
-                return _qz.websocket.dataPromise('hid.startListening');
-            },
-
-            /**
-             * Stop listening for HID device actions.
-             *
-             * @returns {Promise<null|Error>}
-             *
-             * @see qz.hid.setHidCallbacks
-             *
-             * @memberof qz.hid
-             */
-            stopListening: function() {
-                return _qz.websocket.dataPromise('hid.stopListening');
-            },
-
-            /**
-             * List of functions called for any response from open usb devices.
-             * Event data will contain <code>{string} vendorId</code> and <code>{string} productId</code> for all types.
-             *  For RECEIVE types, <code>{Array} output</code> (in hexadecimal format).
-             *  For ERROR types, <code>{string} exception</code>.
-             *  For ACTION types, <code>{string} actionType<code>.
-             *
-             * @param {Function|Array<Function>} calls Single or array of <code>Function({Object} eventData)</code> calls.
-             *
-             * @memberof qz.hid
-             */
-            setHidCallbacks: function(calls) {
-                _qz.hid.hidCallbacks = calls;
-            },
-
-            /**
-             * Claim a HID device to enable sending/reading data across.
-             *
-             * @param vendorId Hex string of HID device's vendor ID.
-             * @param productId Hex string of HID device's product ID.
-             * @returns {Promise<null|Error>}
-             *
-             * @memberof qz.hid
-             */
-            claimDevice: function(vendorId, productId) {
-                var params = {
-                    vendorId: vendorId,
-                    productId: productId
-                };
-                return _qz.websocket.dataPromise('hid.claimDevice', params);
-            },
-
-            /**
-             * Send data to a claimed HID device.
-             *
-             * @param vendorId Hex string of USB device's vendor ID.
-             * @param productId Hex string of USB device's product ID.
-             * @param data Bytes to send over specified endpoint.
-             * @param [reportId=0x00] First byte of the data packet signifying the HID report ID.
-             *                        Must be 0x00 for devices only supporting a single report.
-             * @returns {Promise<null|Error>}
-             *
-             * @memberof qz.usb
-             */
-            sendData: function(vendorId, productId, data, reportId) {
-                var params = {
-                    vendorId: vendorId,
-                    productId: productId,
-                    endpoint: reportId,
-                    data: data
-                };
-                return _qz.websocket.dataPromise('hid.sendData', params);
-            },
-
-            /**
-             * Read data from a claimed HID device.
-             *
-             * @param vendorId Hex string of HID device's vendor ID.
-             * @param productId Hex string of HID device's product ID.
-             * @param responseSize Size of the byte array to receive a response in.
-             * @returns {Promise<Array<string>|Error>} List of (hexadecimal) bytes received from the HID device.
-             *
-             * @memberof qz.hid
-             */
-            readData: function(vendorId, productId, responseSize) {
-                var params = {
-                    vendorId: vendorId,
-                    productId: productId,
-                    responseSize: responseSize
-                };
-                return _qz.websocket.dataPromise('hid.readData', params);
-            },
-
-            /**
-             * Provides a continuous stream of read data from a claimed HID device.
-             *
-             * @param vendorId Hex string of UHIDSB device's vendor ID.
-             * @param productId Hex string of HID device's product ID.
-             * @param responseSize Size of the byte array to receive a response in.
-             * @param [interval=100] Frequency to send read data back, in milliseconds.
-             * @returns {Promise<null|Error>}
-             *
-             * @see qz.hid.setHidCallbacks
-             *
-             * @memberof qz.hid
-             */
-            openStream: function(vendorId, productId, responseSize, interval) {
-                var params = {
-                    vendorId: vendorId,
-                    productId: productId,
-                    responseSize: responseSize,
-                    interval: interval
-                };
-                return _qz.websocket.dataPromise('hid.openStream', params);
-            },
-
-            /**
-             * Stops the stream of read data from a claimed HID device.
-             *
-             * @param vendorId Hex string of HID device's vendor ID.
-             * @param productId Hex string of HID device's product ID.
-             * @returns {Promise<null|Error>}
-             *
-             * @memberof qz.hid
-             */
-            closeStream: function(vendorId, productId) {
-                var params = {
-                    vendorId: vendorId,
-                    productId: productId
-                };
-                return _qz.websocket.dataPromise('hid.closeStream', params);
-            },
-
-            /**
-             * Release a claimed HID device to free resources after sending/reading data.
-             *
-             * @param vendorId Hex string of HID device's vendor ID.
-             * @param productId Hex string of HID device's product ID.
-             * @returns {Promise<null|Error>}
-             *
-             * @memberof qz.hid
-             */
-            releaseDevice: function(vendorId, productId) {
-                var params = {
-                    vendorId: vendorId,
-                    productId: productId
-                };
-                return _qz.websocket.dataPromise('hid.releaseDevice', params);
             }
         },
 
