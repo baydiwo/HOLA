@@ -13,12 +13,12 @@ if ($loop) set_time_limit(0);                                               // ~
 $tag="";                                                                                // ==== Tag to search with
 $searchByLocation=FALSE;                                            // Locations ---> Get LAT, LNG ---> query Instagram API
 $searchByLocation_ID=TRUE;                                      // NOTE: If $searchByLocation == TRUE then this value is ignored
-$footer_picture_name="creature_seattle";        // File type must be JPG
+$footer_picture_name="hola";        // File type must be JPG
 $font = 'Fonts/GeosansLight.ttf';
 
 $footerDir="Footer_Pictures/";
 $srcDir="Original_Instagram_Pictures/";                         // ==== Path to Folder which stores original pictures from Instagram
-$dstDir="Completed_Pictures";                                       // ==== Path to Folder which stores the final pictures after combining
+$dstDir="Completed_Pictures/";                                       // ==== Path to Folder which stores the final pictures after combining
 $interval=30;                                                                       // ==== Interval time (in seconds) - should be >= 20
 
 $clientId="c91b5f8b136c4342805fd2a94a464fbe";       // ==== Instagram Client ID (need to register with Instagram to get it)
@@ -31,30 +31,9 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
 
 //====================================================
 ?>
-<html>
-<head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-
-    <title>HOLA!</title>
-</head>
-
-<!-- Required scripts -->
-<script type="text/javascript" src="assets/js/vendor/rsvp-3.1.0.min.js"></script>
-<script type="text/javascript" src="assets/js/vendor/sha-256.min.js"></script>
-<script type="text/javascript" src="assets/js/vendor/qz-tray.js"></script>
-
-<!-- Page styling -->
-<script src="assets/js/vendor/jquery-1.11.3.min.js"></script>
-<script src="assets/js/vendor/bootstrap.min.js"></script>
-<script src="assets/js/vendor/icheck.min.js"></script>
-<!-- <link rel="stylesheet" href="https://demo.qz.io/css/font-awesome.min.css" /> -->
-<!-- <link rel="stylesheet" href="assets/css/bootstrap.min.css" /> -->
-<link rel="stylesheet" href="assets/css/icheck-square/green.css" />
-<link rel="stylesheet" href="assets/css/style.css" />
-
-
-<body id="qz-page" role="document">
+<?php include "incl/head.php" ?>
 <?php include "incl/header.php"; ?>
+
 <div id="qz-alert" style="position: fixed; width: 60%; margin: 0 4% 0 36%; z-index: 900;"></div>
 <div id="qz-pin" style="position: fixed; width: 30%; margin: 0 66% 0 4%; z-index: 900;"></div>
 
@@ -62,91 +41,34 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
 <div class="container-fluid" role="main">
 
     <div class="row spread">
-        <div class="col-md-3">
-            <div id="qz-connection" class="panel panel-default">
-                <div class="panel-heading">
-                    <button class="close tip" data-toggle="tooltip" title="Launch QZ" id="launch" href="#" onclick="launchQZ();" style="display: none;">
-                        <i class="fa fa-external-link"></i>
-                    </button>
-                    <h3 class="panel-title">
-                        Connection: <span id="qz-status" class="text-muted" style="font-weight: bold;">Unknown</span>
-                    </h3>
-                </div>
-
-                <div class="panel-body">
-                    <div class="btn-toolbar">
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default" onclick="startConnection();">Connect</button>
-                            <button type="button" class="btn btn-default" onclick="endConnection();">Disconnect</button>
-                            <button type="button" class="btn btn-default" onclick="listNetworkInfo();">List Network Info</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <hr />
-
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Printer</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label for="printerSearch">Search:</label>
-                        <input type="text" id="printerSearch" value="zebra" class="form-control" />
-                    </div>
-
-                    <button type="button" class="btn btn-default btn-sm" onclick="findPrinter($('#printerSearch').val(), true);">Find Printer</button>
-                    <button type="button" class="btn btn-default btn-sm" onclick="findDefaultPrinter(true);">Find Default Printer</button>
-                    <button type="button" class="btn btn-default btn-sm" onclick="findPrinters();">Find All Printers</button>
-
-                    <hr />
-                    <div class="form-group">
-                        <label>Current printer:</label>
-                        <div id="configPrinter">NONE</div>
-                    </div>
-                    <div class="form-group">
-                        <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-default btn-sm" onclick="setPrinter($('#printerSearch').val());">Set To Search</button>
-                            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#askFileModal">Set To File</button>
-                            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#askHostModal">Set To Host</button>
-                        </div>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>
+        <?php include 'incl/sidebar.php'; ?>
 
         <div class="col-md-9">
-            <div class="row">
 
                 <?php if (!$tag){ ?>
 
-                <form class="col-md-12">
-                    <div class="row">
-                        <h3>Search and Generate images with Tag: </h3>
-                        <div class="input-field col s12">
-                            <input name="tag" placeholder="Your Hastag" type="text" id="hashtag" />
-                            <label for="hashtag">Hastag</label>
-
-                            <p>
-                                <input type="checkbox" name="searchByLocation" id="searchByLocation" />
-                                <label for="searchByLocation">Search By Location</label>
-                            </p>
-                            <p>
-                                <input type="checkbox" name="searchByLocation_ID" id="searchByLocation_ID" />
-                                <label for="searchByLocation_ID">Search By Location ID (If Search By Location is checked. This will be ignored)</label>
-                            </p>
+                <form>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Search and Generate images with Tag:</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <input name="tag" class="form-control" placeholder="Your Hastag" type="text" id="hashtag" />
+                                </div>
+                                    <!-- <p>
+                                        <input type="checkbox" name="searchByLocation" id="searchByLocation" />
+                                        <label for="searchByLocation">Search By Location</label>
+                                    </p>
+                                    <p>
+                                        <input type="checkbox" name="searchByLocation_ID" id="searchByLocation_ID" />
+                                        <label for="searchByLocation_ID">Search By Location ID (If Search By Location is checked. This will be ignored)</label>
+                                    </p> -->
+                                <button class="btn btn-default" type="submit" name="action">Search
+                                    <i class="fa fa-hashtag"></i>
+                                 </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12">
-                             <button class="btn btn-default" type="submit" name="action">Submit
-                                <i class="material-icons right">send</i>
-                             </button>
-                        </div>
-                    </div>
                 </form>
 
 <?php } else {
@@ -258,8 +180,9 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
     ?>
                 <div class="right-side">
                     <button type="button" class="btn btn-default" onclick="getAllImage();">Get All IMage</button>
-                    <button type="button" class="btn btn-default" onclick="printImage();">Print Image</button>
+                    <!-- <button type="button" class="btn btn-default" onclick="printImage();">Print Image</button> -->
                     <button type="button" class="btn btn-default" onclick="printCheckedImage();">Print Checked</button>
+                    <h3 class="pull-right">Hashtag: <?php echo $_GET['tag']; ?></h3>
                 </div>
                 <div class="polaroid-wrapper" id="polaroid-wrapper">
                     <form>
@@ -282,14 +205,9 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
      //imagepng($image);
 }
 ?>
-            </div>
-        </div>
+
+        </div> <!-- col-md-9 -->
     </div> <!-- row spread -->
 </div> <!-- container -->
 </main>
-    <script type="text/javascript" src="assets/js/app.js"></script>
-</body>
-
-
-
-</html>
+<?php include "incl/footer.php" ?>

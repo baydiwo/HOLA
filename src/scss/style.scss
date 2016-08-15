@@ -2,9 +2,62 @@
 @import "font-awesome";
 @import "bootstrap";
 
-/*//To enable background printing in Chrome:*/
+//vars
+$light-red: #f26866;
+$dark-red: #cc3a3b;
+$light-blue: #82d5ff;
+$dark-blue: #1d75bd;
+
+.login-form {
+    position: relative;
+    top: 50vh;
+    margin: 0 auto;
+    margin-top: calc(-340px / 2);
+    width:400px;
+    height: 340px;
+    padding: 20px;
+
+    .btn {
+        border-color: $light-red;
+        width:100%;
+
+        &:hover {
+            background-color: $light-red;
+            color: white;
+        }
+    }
+
+    .form-control:focus {
+        border-color: $light-red;
+        box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(242,104,102,0.6)
+    }
+}
+
+a.admin {
+    i {
+        color: $dark-blue;
+        font-size: 18px;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+}
+
+.group-connect {
+    width: 100%;
+    .btn-connect {
+        width:50%;
+    }
+    .btn-list {
+        width:100%;
+    }
+}
+
 .list-image {
     padding: 5px;
+}
+
+.right-side {
+    h3 {margin:0;}
 }
 
 .polaroid-wrapper {
