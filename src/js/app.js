@@ -1130,6 +1130,5 @@ function setPrinter(printer) {
 $(document).ready(function(){
     $('.checkboxes').iCheck({
         checkboxClass: 'icheckbox_square-green',
-        // increaseArea: '20%' // optional
     });
 });

@@ -1,4 +1,6 @@
 <?php
+require_once("login/session.php");
+
 /* ====================== INFO ========================
 Frame:                          340 x 510
 Instagram size:             306 x 306
@@ -48,27 +50,27 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
                 <?php if (!$tag){ ?>
 
                 <form>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">Search and Generate images with Tag:</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div class="form-group">
-                                    <input name="tag" class="form-control" placeholder="Your Hastag" type="text" id="hashtag" />
-                                </div>
-                                    <!-- <p>
-                                        <input type="checkbox" name="searchByLocation" id="searchByLocation" />
-                                        <label for="searchByLocation">Search By Location</label>
-                                    </p>
-                                    <p>
-                                        <input type="checkbox" name="searchByLocation_ID" id="searchByLocation_ID" />
-                                        <label for="searchByLocation_ID">Search By Location ID (If Search By Location is checked. This will be ignored)</label>
-                                    </p> -->
-                                <button class="btn btn-default" type="submit" name="action">Search
-                                    <i class="fa fa-hashtag"></i>
-                                 </button>
-                            </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Search and Generate images with Tag:</h3>
                         </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <input name="tag" class="form-control" placeholder="Your Hastag" type="text" id="hashtag" />
+                            </div>
+                                <!-- <p>
+                                    <input type="checkbox" name="searchByLocation" id="searchByLocation" />
+                                    <label for="searchByLocation">Search By Location</label>
+                                </p>
+                                <p>
+                                    <input type="checkbox" name="searchByLocation_ID" id="searchByLocation_ID" />
+                                    <label for="searchByLocation_ID">Search By Location ID (If Search By Location is checked. This will be ignored)</label>
+                                </p> -->
+                            <button class="btn btn-default" type="submit" name="action">Search
+                                <i class="fa fa-hashtag"></i>
+                             </button>
+                        </div>
+                    </div>
                 </form>
 
 <?php } else {
@@ -76,6 +78,7 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
         // GET THE URL
         // $url="https://api.instagram.com/v1/tags/".$tag."/media/recent?client_id=".$clientId; // SEARCH BY TAGS - Instagram API tags endpoint
         $url = "https://api.instagram.com/v1/tags/".$tag."/media/recent?access_token=2988019436.c91b5f8.93fd1389ab174df8a8e6a50711912aed"; // SEARCH BY TAGS - Instagram API tags endpoint
+        echo $url;
         if ($searchByLocation){
             $geoCodingUrl="http://maps.google.com/maps/api/geocode/json?address=".$tag."&sensor=false";
             $json=file_get_contents($geoCodingUrl);
@@ -179,9 +182,9 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
     // =========== OUTPUT TO WEB BROWSER ============
     ?>
                 <div class="right-side">
-                    <button type="button" class="btn btn-default" onclick="getAllImage();">Get All IMage</button>
+                    <button type="button" class="btn btn-default" name="getAllImage" onclick="getAllImage();">Get All IMage</button>
                     <!-- <button type="button" class="btn btn-default" onclick="printImage();">Print Image</button> -->
-                    <button type="button" class="btn btn-default" onclick="printCheckedImage();">Print Checked</button>
+                    <button type="button" class="btn btn-default" name="printCheckedImage" onclick="printCheckedImage();">Print Checked</button>
                     <h3 class="pull-right">Hashtag: <?php echo $_GET['tag']; ?></h3>
                 </div>
                 <div class="polaroid-wrapper" id="polaroid-wrapper">
