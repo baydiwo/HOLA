@@ -425,7 +425,7 @@ function getAllImage() {
     $( '.printed-image' ).each( function ( index ) {
         imgName = $( this ).data( "name" );
 
-        var objs = { type: 'image', data: 'Completed_Pictures/seattle/'+imgName+'.jpg' };
+        var objs = { type: 'image', data: 'Completed_Pictures/'+imgName+'.jpg' };
         listImage.push(objs);
 
         // listImage = objs;
@@ -438,17 +438,17 @@ function printCheckedImage() {
     var listImage = [];
     $( '#polaroid-wrapper input[id]:checked' ).each( function ( index ) {
         imgName = $( this ).val();
-        var objs = { type: 'image', data: 'Completed_Pictures/seattle/'+imgName+'.jpg' };
+        var objs = { type: 'image', data: 'Completed_Pictures/'+imgName+'.jpg' };
         listImage.push(objs);
     });
 
-    // console.log(listImage);
+    console.log(listImage);
     printImage(listImage);
 }
 
 function printImage(lists) {
     // var config = getUpdatedConfig();
-    var config = qz.configs.create("Send To OneNote 16", {
+    var config = qz.configs.create("Canon MP280 series", {
         size: {width: 4, height: 6},
         units: 'in',
         colorType: 'color',

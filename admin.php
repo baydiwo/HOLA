@@ -24,6 +24,7 @@ $dstDir="Completed_Pictures/";                                       // ==== Pat
 $interval=30;                                                                       // ==== Interval time (in seconds) - should be >= 20
 
 $clientId="c91b5f8b136c4342805fd2a94a464fbe";       // ==== Instagram Client ID (need to register with Instagram to get it)
+$access_token="187207740.c91b5f8.74f03550fb08466390f553d353b94877";
 if ($tag==""){
     $tag=$_GET['tag'];                                                          // ~ If there is no tag value here then get it from Web browser
     $searchByLocation=$_GET['searchByLocation'];
@@ -77,8 +78,9 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
     while (TRUE){
         // GET THE URL
         // $url="https://api.instagram.com/v1/tags/".$tag."/media/recent?client_id=".$clientId; // SEARCH BY TAGS - Instagram API tags endpoint
-        $url = "https://api.instagram.com/v1/tags/".$tag."/media/recent?access_token=2988019436.c91b5f8.93fd1389ab174df8a8e6a50711912aed"; // SEARCH BY TAGS - Instagram API tags endpoint
-        echo $url;
+        $url = "https://api.instagram.com/v1/tags/".$tag."/media/recent?access_token=".$access_token; // SEARCH BY TAGS - Instagram API tags endpoint
+        // https://api.instagram.com/v1/tags/nofilter/media/recent?access_token=187207740.c91b5f8.74f03550fb08466390f553d353b94877
+        // echo $url;
         if ($searchByLocation){
             $geoCodingUrl="http://maps.google.com/maps/api/geocode/json?address=".$tag."&sensor=false";
             $json=file_get_contents($geoCodingUrl);
@@ -95,13 +97,15 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
         $jsonContent=file_get_contents($url);
         $content = json_decode($jsonContent);
 
+       $totalData = count($content->data);
+        // exit;
         $imgArr=array();
             $realImageArray=array();
         $userArr=array();
         $avatarArr=array();
             $realAvatarArray=array();
         $timeArr=array();
-        for ($i=0;$i<4;$i++){
+        for ($i=0;$i<$totalData;$i++){
             $imgArr[]=$content->data[$i]->images->low_resolution->url;
             $userArr[]=$content->data[$i]->user->username;
             $avatarArr[]=$content->data[$i]->user->profile_picture;
@@ -139,7 +143,7 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
         // ==================== CREATE IMAGE FILES ==================
         $originFrame = imagecreatefromstring(file_get_contents("frame.jpg"));
 
-        for ($i=0;$i<4;$i++){
+        for ($i=0;$i<$totalData;$i++){
             if ($ignoredImageArray[$i]) continue;  //ignore image if in source
             $frame=$originFrame;            // Clone new frame
 
@@ -192,7 +196,7 @@ $ignoredImageArray=array(0,0,0,0);                                     // don't 
                     <ul>
                         <?php
                         echo "";
-                        for ($i=0;$i<4;$i++)
+                        for ($i=0;$i<$totalData;$i++)
                             echo "
                             <li>
                                 <input type='checkbox' class='checkboxes' name='pol-".$i."' id='pol-".$i."' value='".md5($imgArr[$i])."' >
